@@ -9,9 +9,10 @@
   },
   "scripts": {
     "build": "tsc",
-    "watch": "tsc --watch",
-    "prepare": "npm run build",
-    "dev": "tsx src/index.ts"
+    "tsc": "tsc",
+    "typecheck": "tsc --noEmit",
+    "start": "node src/index.ts",
+    "dev": "node --watch src/index.ts"
   },
   "keywords": [
     "mcp",
@@ -32,13 +33,11 @@
     "url": "https://github.com/edrich13/mcp-jira-server/issues"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4",
-    "axios": "^1.7.9"
+    "@modelcontextprotocol/sdk": "^1.0.4"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "@types/node": "^24.0.0",
+    "typescript": "^6.0.0"
   },
   "files": [
     "build/**/*",

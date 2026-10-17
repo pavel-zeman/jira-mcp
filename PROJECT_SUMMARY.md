@@ -25,8 +25,9 @@ A complete Model Context Protocol (MCP) server for integrating self-hosted Jira 
 ```
 mcp-jira-server/
 ├── src/
-│   ├── index.ts              # MCP server implementation (12 tools)
-│   └── jira-client.ts        # Jira REST API client
+│   ├── index.ts              # MCP server implementation (13 tools)
+│   ├── jira-client.ts        # Jira REST API client
+│   └── activity-stream.ts    # Activity stream (Atom feed) parser
 ├── build/                    # Compiled JavaScript
 ├── package.json              # Dependencies and scripts
 ├── tsconfig.json             # TypeScript configuration
@@ -59,6 +60,7 @@ mcp-jira-server/
 10. **jira_assign_issue** - Assign issues to users
 11. **jira_delete_issue** - Delete issues permanently
 12. **jira_get_current_user** - Get authenticated user info
+13. **jira_get_activity_stream** - Read the global or a user's activity stream
 
 ## 📚 Documentation Provided
 

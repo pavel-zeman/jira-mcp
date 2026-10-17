@@ -12,6 +12,7 @@ A Model Context Protocol (MCP) server for interacting with self-hosted Jira inst
 - ✅ List projects and issue types
 - ✅ Transition issues between statuses
 - ✅ Get current user information
+- ✅ Read the global or a user's activity stream
 
 ## Prerequisites
 
@@ -280,6 +281,24 @@ Get information about the currently authenticated user.
 
 **Parameters:** None
 
+### 13. `jira_get_activity_stream`
+Read the activity stream (issues created, fields updated, status transitions, comments), newest first. Without `username` it returns the global activity stream; with `username` it returns that user's activity stream. Each entry contains the time, author, a plain-text title, details (e.g. comment text or changed fields), a link and the issue key.
+
+**Parameters:**
+- `username` (string, optional): Jira username (the `name` returned by `jira_get_current_user`, not the display name). Omit for the global stream
+- `projectKey` (string, optional): Only activity in this project
+- `issueKey` (string, optional): Only activity on this issue
+- `after` (string, optional): Only activity after this ISO 8601 date or date-time (e.g., "2026-10-01" or "2026-10-01T08:00:00Z")
+- `before` (string, optional): Only activity before this ISO 8601 date or date-time
+- `maxResults` (number, optional): Maximum entries to return (default: 20)
+
+**Examples:**
+```
+What happened in Jira today?
+What did I do in project PROJ last week?
+Show the recent activity of user jdoe
+```
+
 ## Development
 
 ### Build the server
@@ -292,10 +311,15 @@ npm run build
 npm run watch
 ```
 
-### Run in development mode
+### Run the TypeScript source directly (no build step)
+Requires Node.js 22.18+ (native TypeScript type stripping).
 ```bash
-npm run dev
+npm start            # node src/index.ts
+npm run dev          # node --watch src/index.ts (restarts on changes)
+npm run typecheck    # tsc --noEmit
 ```
+
+Node only strips types and does not type-check, so run `npm run typecheck` to catch type errors. MCP client configs can point at `src/index.ts` instead of `build/index.js`.
 
 ## Testing the Server
 
@@ -349,6 +373,7 @@ After configuring the server, restart Claude Desktop or VS Code to load the new 
 - **"Unauthorized"**: Verify your Personal Access Token
 - **"Issue type not found"**: Use `jira_get_issue_types` to see valid types for the project
 - **API requests redirect to SSO login**: Your Jira may be behind a reverse proxy (oauth2-proxy, nginx) that filters by User-Agent. Set `JIRA_USER_AGENT` environment variable to a whitelisted User-Agent string. Contact your system administrator to get the allowed User-Agent value.
+- **Jira only reachable through an HTTP proxy**: The server uses Node's built-in `fetch`, which ignores `HTTP_PROXY`/`HTTPS_PROXY` unless you also set `NODE_USE_ENV_PROXY=1` (Node.js 24+) in the server's environment.
 
 ## Security Best Practices
 
@@ -361,7 +386,7 @@ After configuring the server, restart Claude Desktop or VS Code to load the new 
 
 ## API Reference
 
-This MCP server uses the Jira REST API v2. For more information about Jira's API:
+This MCP server uses the Jira REST API v2, plus the Atlassian Activity Streams feed (`/activity`, bundled with Jira Server/Data Center) for `jira_get_activity_stream`. For more information about Jira's API:
 - Jira REST API documentation: `https://your-jira-instance/rest/api/2/`
 - JQL syntax guide: Check your Jira instance documentation
 

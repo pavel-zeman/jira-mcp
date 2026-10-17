@@ -5,6 +5,11 @@ All notable changes to the MCP Jira Server project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `jira_get_activity_stream` tool for reading the global activity stream or a user's activity stream, optionally narrowed by project, issue and date range
+
 ## [1.0.3] - 2026-01-27
 
 ### Added

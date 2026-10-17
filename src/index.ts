@@ -5,9 +5,9 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
-  Tool,
+  type Tool,
 } from '@modelcontextprotocol/sdk/types.js';
-import { JiraClient, CreateIssueInput, UpdateIssueInput } from './jira-client.js';
+import { JiraApiError, JiraClient, type CreateIssueInput, type UpdateIssueInput } from './jira-client.ts';
 
 // Environment variables
 const JIRA_BASE_URL = process.env.JIRA_BASE_URL;
@@ -294,6 +294,40 @@ const tools: Tool[] = [
       properties: {},
     },
   },
+  {
+    name: 'jira_get_activity_stream',
+    description: 'Read the Jira activity stream (issues created, fields updated, status transitions, comments), newest first. Omit username for the global activity stream, or pass one to get that user\'s activity stream. Can be narrowed by project, issue and date range.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        username: {
+          type: 'string',
+          description: 'Jira username whose activity to return (the "name" field from jira_get_current_user, not the display name). Omit for the global activity stream',
+        },
+        projectKey: {
+          type: 'string',
+          description: 'Only include activity in this project',
+        },
+        issueKey: {
+          type: 'string',
+          description: 'Only include activity on this issue (e.g., PROJ-123)',
+        },
+        after: {
+          type: 'string',
+          description: 'Only include activity after this ISO 8601 date or date-time (e.g., 2026-10-01 or 2026-10-01T08:00:00Z)',
+        },
+        before: {
+          type: 'string',
+          description: 'Only include activity before this ISO 8601 date or date-time',
+        },
+        maxResults: {
+          type: 'number',
+          description: 'Maximum number of entries to return (default: 20)',
+          default: 20,
+        },
+      },
+    },
+  },
 ];
 
 // Create server instance
@@ -492,6 +526,25 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
+      case 'jira_get_activity_stream': {
+        const entries = await getJiraClient().getActivityStream({
+          username: args.username as string,
+          projectKey: args.projectKey as string,
+          issueKey: args.issueKey as string,
+          after: args.after as string,
+          before: args.before as string,
+          maxResults: args.maxResults as number,
+        });
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(entries, null, 2),
+            },
+          ],
+        };
+      }
+
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
@@ -500,7 +553,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       content: [
         {
           type: 'text',
-          text: `Error: ${error.message}\n\n${error.response?.data ? JSON.stringify(error.response.data, null, 2) : ''}`,
+          text: `Error: ${error.message}\n\n${error instanceof JiraApiError && error.data ? JSON.stringify(error.data, null, 2) : ''}`,
         },
       ],
       isError: true,
