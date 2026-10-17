@@ -5,13 +5,22 @@ All notable changes to the MCP Jira Server project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.0] - 2026-10-17
 
 ### Added
 - `jira_get_activity_stream` tool for reading the global activity stream or a user's activity stream, optionally narrowed by project, issue and date range
+- `npm start` / `npm run dev` run the TypeScript source directly on Node.js 22.18+ (no build step), and `npm run typecheck` type-checks it
+- `prepublishOnly` script so `npm publish` always ships a fresh build
 
 ### Changed
-- Replaced `@modelcontextprotocol/sdk` with a built-in minimal MCP server over stdio (`src/mcp-server.ts`); the package now has no runtime dependencies
+- Replaced `@modelcontextprotocol/sdk` with a built-in minimal MCP server over stdio (`src/mcp-server.ts`), supporting MCP protocol versions 2024-10-07 to 2025-11-25
+- Replaced `axios` with Node's built-in `fetch`; the package now has no runtime dependencies
+- `HTTP_PROXY`/`HTTPS_PROXY` are no longer honored automatically (axios did); set `NODE_USE_ENV_PROXY=1` (Node.js 24+) in the server's environment to route Jira requests through them
+- Error messages now name the failing request (e.g. `GET /issue/PROJ-1 failed with status code 404`), and network failures report the underlying cause (DNS, TLS, connection refused) instead of a generic message
+- Development toolchain upgraded to TypeScript 6 and `@types/node` 24; `tsx` and the `watch` and `prepare` scripts were removed
+
+### Fixed
+- The server now reports its real version in the MCP `initialize` response (it always reported `1.0.0`)
 
 ## [1.0.3] - 2026-01-27
 
@@ -86,6 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Release History
 
+- **1.1.0** (2026-10-17) - Activity streams & zero runtime dependencies
 - **1.0.3** (2026-01-27) - Custom fields & security updates
 - **1.0.2** (2025-10-08) - Initial public release
 - **1.0.1** (2025-10-08) - Pre-release version

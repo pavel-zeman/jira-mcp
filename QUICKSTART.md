@@ -105,6 +105,7 @@ Once connected, you can search using JQL:
 - ✅ Transition statuses
 - ✅ List projects and issue types
 - ✅ View current user
+- ✅ Read activity streams (global or per user)
 
 ## 💡 Example Prompts
 
@@ -115,6 +116,7 @@ Try these in Claude:
 3. "Add a comment to issue ABC-123 saying 'Fixed in latest release'"
 4. "Update issue ABC-456 to set status to In Progress and assign to me"
 5. "Search for all issues I reported in the last week"
+6. "What happened in project XYZ today?"
 
 ## 🔐 Security Reminder
 

@@ -19,6 +19,7 @@ A complete Model Context Protocol (MCP) server for integrating self-hosted Jira 
 - ✅ **Transitions**: Move issues through workflows
 - ✅ **Projects**: List and view project details
 - ✅ **User Info**: Get current authenticated user details
+- ✅ **Activity Streams**: Read the global or a user's activity stream, filtered by project, issue and date range
 
 ## 📁 Project Structure
 
@@ -34,6 +35,8 @@ mcp-jira-server/
 ├── tsconfig.json             # TypeScript configuration
 ├── README.md                 # Complete documentation
 ├── QUICKSTART.md             # 5-minute setup guide
+├── CHANGELOG.md              # Version history
+├── RELEASE_NOTES.md          # Detailed release notes
 ├── .env.example              # Environment variable template
 ├── claude_desktop_config.example.json    # Claude Desktop config
 └── vscode_mcp_config.example.json        # VS Code config
@@ -41,10 +44,11 @@ mcp-jira-server/
 
 ## 🛠 Technology Stack
 
-- **Runtime**: Node.js 18+
-- **Language**: TypeScript 5.7+
+- **Runtime**: Node.js 18+ (22.18+ to run the TypeScript source directly)
+- **Language**: TypeScript 6
 - **MCP**: built-in stdio server, protocol versions 2024-10-07 to 2025-11-25 (no SDK dependency)
-- **HTTP Client**: Axios 1.7.9
+- **HTTP Client**: Node.js built-in `fetch`
+- **Runtime Dependencies**: none
 - **Build Tool**: TypeScript Compiler (tsc)
 
 ## 🔧 Available MCP Tools
@@ -118,7 +122,7 @@ npm run build
 ## ✅ Build Status
 
 - ✅ TypeScript compilation successful
-- ✅ All dependencies installed
+- ✅ No runtime dependencies
 - ✅ Build artifacts created in `build/` directory
 - ✅ No vulnerabilities found
 - ✅ Ready for deployment

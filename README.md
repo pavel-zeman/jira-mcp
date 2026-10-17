@@ -50,8 +50,8 @@ npm install -g mcp-jira-server
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/edrich13/mcp-jira-server.git
-cd mcp-jira-server
+git clone https://github.com/pavel-zeman/jira-mcp.git
+cd jira-mcp
 ```
 
 2. Install dependencies:
@@ -96,7 +96,7 @@ Add the following to your Claude Desktop configuration file:
     "jira": {
       "type": "stdio",
       "command": "node",
-      "args": ["/Users/edrich.rocha/.nvm/versions/node/v22.6.0/bin/mcp-jira-server"],
+      "args": ["/absolute/path/to/mcp-jira-server/build/index.js"],
       "env": {
         "JIRA_BASE_URL": "https://jira.domain.com",
         "JIRA_PAT": "your-personal-access-token-here"
@@ -147,6 +147,7 @@ Create or update `.vscode/mcp.json` in your workspace:
 - `JIRA_BASE_URL`: The base URL of your self-hosted Jira instance (e.g., `https://jira.domain.com`)
 - `JIRA_PAT`: Your Personal Access Token
 - `JIRA_USER_AGENT` (optional): Custom User-Agent header for Jira instances behind reverse proxies (oauth2-proxy, nginx, etc.) that filter requests by User-Agent. If your API requests get redirected to SSO login despite valid PAT, your reverse proxy may require a specific User-Agent to bypass authentication for API clients.
+- `NODE_USE_ENV_PROXY` (optional): Set to `1` (Node.js 24+) to send Jira requests through the HTTP proxy configured in `HTTP_PROXY`/`HTTPS_PROXY`. Node's built-in `fetch` ignores those variables otherwise.
 
 ## Available Tools
 
@@ -306,9 +307,9 @@ Show the recent activity of user jdoe
 npm run build
 ```
 
-### Watch mode for development
+### Rebuild on changes
 ```bash
-npm run watch
+npm run build -- --watch
 ```
 
 ### Run the TypeScript source directly (no build step)
@@ -345,6 +346,11 @@ After configuring the server, restart Claude Desktop or VS Code to load the new 
 4. **Create an issue:**
    ```
    Create a new task in project PROJ with summary "Test MCP integration"
+   ```
+
+5. **Read the activity stream:**
+   ```
+   What did I do in Jira this week?
    ```
 
 ## Troubleshooting

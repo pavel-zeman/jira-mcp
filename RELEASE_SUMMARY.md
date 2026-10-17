@@ -1,8 +1,8 @@
-# 🚀 MCP Jira Server v1.0.2 - Release Summary
+# 🚀 MCP Jira Server v1.1.0 - Release Summary
 
-## 🎉 First Public Release!
+## 📰 Activity Streams & Zero Runtime Dependencies
 
-We're excited to announce the initial public release of **MCP Jira Server** - bringing powerful Jira integration to AI assistants through the Model Context Protocol.
+**MCP Jira Server** brings Jira integration to AI assistants through the Model Context Protocol. Version 1.1.0 adds activity streams and drops every runtime dependency.
 
 ### 📦 Available Now on npm
 ```bash
@@ -11,27 +11,24 @@ npx mcp-jira-server
 
 ### ✨ What's New
 
-**🔐 Secure Authentication**
-- Personal Access Token support for self-hosted Jira instances
-- Environment variable configuration
+**📰 Activity Streams**
+- New `jira_get_activity_stream` tool: issues created, fields updated, status transitions and comments, newest first
+- Global stream or a single user's stream
+- Filter by project, issue and date range
 
-**🛠️ Complete Jira Integration**
-- **12 powerful tools** for full Jira management
-- Create, read, update, delete issues
-- Advanced JQL search capabilities
-- Comment management
-- Project and user operations
+**📦 No Runtime Dependencies**
+- Built-in MCP server replaces `@modelcontextprotocol/sdk`
+- Node's built-in `fetch` replaces `axios`
 
-**🤖 AI Assistant Ready**
-- Claude Desktop integration
-- VS Code GitHub Copilot support
-- Model Context Protocol compliance
+**🩺 Clearer Errors**
+- Errors name the failing request and the real cause of network failures
 
-**💪 Production Ready**
-- Robust error handling
-- Graceful startup (works without initial config)
-- TypeScript built
-- Comprehensive documentation
+**🛠️ Developer Experience**
+- Run the TypeScript source directly on Node.js 22.18+ (`npm start`, `npm run dev`)
+- TypeScript 6 toolchain
+
+### ⚠️ Upgrade Note
+Node's `fetch` ignores `HTTP_PROXY`/`HTTPS_PROXY`. If Jira is only reachable through a proxy, set `NODE_USE_ENV_PROXY=1` (Node.js 24+) in the server's environment.
 
 ### 🛠️ Available Tools
 
@@ -41,11 +38,7 @@ npx mcp-jira-server
 | **Comments** | `add_comment`, `get_comments` |
 | **Projects** | `get_projects`, `get_project`, `get_issue_types` |
 | **Users** | `assign_issue`, `get_current_user` |
-
-### 🎯 Perfect For
-- **Development Teams**: Sprint planning, bug tracking, automation
-- **Project Managers**: Progress tracking, reporting, resource planning  
-- **QA Teams**: Test case management, bug reporting
+| **Activity** | `get_activity_stream` *(new)* |
 
 ### 🚀 Quick Start
 
@@ -66,7 +59,7 @@ npx mcp-jira-server
      "mcpServers": {
        "jira": {
          "command": "npx",
-         "args": ["mcp-jira-server"],
+         "args": ["-y", "mcp-jira-server"],
          "env": {
            "JIRA_BASE_URL": "https://your-jira.com",
            "JIRA_PAT": "your-token"
@@ -77,20 +70,13 @@ npx mcp-jira-server
    ```
 
 ### 📊 Package Stats
-- **Size**: 11.4 kB compressed
+- **Size**: 20.4 kB compressed, 84.9 kB unpacked
 - **Node.js**: 18+ required
 - **License**: MIT
-- **Dependencies**: MCP SDK + Axios
+- **Dependencies**: none
 
 ### 🔗 Links
 - **npm**: https://www.npmjs.com/package/mcp-jira-server
-- **GitHub**: https://github.com/edrich13/mcp-jira-server
+- **GitHub**: https://github.com/pavel-zeman/jira-mcp
+- **Release Notes**: See RELEASE_NOTES.md
 - **Documentation**: See README.md
-
----
-
-**Ready to supercharge your Jira workflow with AI? Get started now!** 🎉
-
-```bash
-npx mcp-jira-server
-```

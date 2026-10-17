@@ -1,5 +1,81 @@
 # MCP Jira Server - Release Notes
 
+## 🚀 Version 1.1.0 - October 17, 2026
+
+### 🎯 Activity Streams & Zero Runtime Dependencies
+
+This release adds a tool for reading Jira activity streams and removes all runtime dependencies: the MCP SDK is replaced by a small built-in MCP server and axios by Node's built-in `fetch`.
+
+### ✨ What's New
+
+#### 📰 **Activity Streams**
+- **New tool `jira_get_activity_stream`**: Read what happened in Jira (issues created, fields updated, status transitions, comments), newest first
+- **Global or per user**: Omit `username` for the global activity stream, or pass a username for that user's stream
+- **Filters**: Narrow by project, issue and date range (`after` / `before` as ISO 8601 dates or date-times)
+- **Plain-text output**: Each entry has the time, author, title, details (e.g. comment text or changed fields), link and issue key
+- Uses the Atlassian Activity Streams feed (`/activity`) that ships with Jira Server/Data Center
+
+#### 📦 **No Runtime Dependencies**
+- **Built-in MCP server**: `@modelcontextprotocol/sdk` replaced by a minimal JSON-RPC 2.0 server over stdio (`src/mcp-server.ts`), supporting MCP protocol versions 2024-10-07 to 2025-11-25
+- **Native HTTP**: `axios` replaced by Node's built-in `fetch`
+- `npm install mcp-jira-server` now installs nothing but the server itself
+
+#### 🩺 **Clearer Errors**
+- Error messages name the failing request, e.g. `GET /issue/PROJ-1 failed with status code 404`
+- Network failures report the real cause (DNS, TLS, connection refused) instead of a generic message
+
+#### 🛠️ **Developer Experience**
+- Run the TypeScript source directly on Node.js 22.18+, with no build step: `npm start`, or `npm run dev` to restart on changes
+- `npm run typecheck` type-checks the source
+- Toolchain upgraded to TypeScript 6 and `@types/node` 24
+- `npm publish` now builds the package first (`prepublishOnly`)
+
+### 🐛 **Fixes**
+- The server reports its real version in the MCP `initialize` response (previously always `1.0.0`)
+
+### 📦 Package Information
+- **npm Package**: `mcp-jira-server`
+- **Version**: 1.1.0
+- **Runtime Dependencies**: none
+- **License**: MIT
+
+### 📋 **New Tool**
+
+| Tool | Description | Parameters (all optional) |
+|------|-------------|-------------------|
+| `jira_get_activity_stream` | Read the global or a user's activity stream | `username`, `projectKey`, `issueKey`, `after`, `before`, `maxResults` (default: 20) |
+
+#### Example Prompts
+```
+What happened in Jira today?
+What did I do in project PROJ last week?
+Show the recent activity of user jdoe
+```
+
+### 🔄 **Migration from 1.0.3**
+
+No changes to existing tools or configuration. Simply update:
+```bash
+npm update mcp-jira-server
+```
+
+Or for npx users, it will automatically use the latest version:
+```bash
+npx mcp-jira-server
+```
+
+Things to check:
+- **HTTP proxy users**: Node's `fetch` ignores `HTTP_PROXY`/`HTTPS_PROXY`, which axios honored. If Jira is only reachable through a proxy, add `NODE_USE_ENV_PROXY=1` (Node.js 24+) to the server's `env` in your MCP client configuration.
+- **Error message format**: Error texts changed (see above). This only matters if you parse them.
+- **Contributors**: `npm run watch` and the `tsx`-based `npm run dev` were removed. Use `npm run dev` (Node.js 22.18+) or `npm run build -- --watch`.
+
+### 🙏 **Contributors**
+
+Special thanks to:
+- [@pavel-zeman](https://github.com/pavel-zeman) - Activity streams, built-in MCP server and dependency removal
+
+---
+
 ## 🚀 Version 1.0.3 - January 27, 2026
 
 ### 🎯 Custom Fields & Security Updates
