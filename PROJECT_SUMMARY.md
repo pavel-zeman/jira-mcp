@@ -25,7 +25,8 @@ A complete Model Context Protocol (MCP) server for integrating self-hosted Jira 
 ```
 mcp-jira-server/
 ├── src/
-│   ├── index.ts              # MCP server implementation (13 tools)
+│   ├── index.ts              # Jira tool definitions and handlers (13 tools)
+│   ├── mcp-server.ts         # Minimal MCP server (JSON-RPC 2.0 over stdio)
 │   ├── jira-client.ts        # Jira REST API client
 │   └── activity-stream.ts    # Activity stream (Atom feed) parser
 ├── build/                    # Compiled JavaScript
@@ -42,7 +43,7 @@ mcp-jira-server/
 
 - **Runtime**: Node.js 18+
 - **Language**: TypeScript 5.7+
-- **MCP SDK**: @modelcontextprotocol/sdk 1.0.4
+- **MCP**: built-in stdio server, protocol versions 2024-10-07 to 2025-11-25 (no SDK dependency)
 - **HTTP Client**: Axios 1.7.9
 - **Build Tool**: TypeScript Compiler (tsc)
 

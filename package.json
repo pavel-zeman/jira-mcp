@@ -32,9 +32,6 @@
   "bugs": {
     "url": "https://github.com/edrich13/mcp-jira-server/issues"
   },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4"
-  },
   "devDependencies": {
     "@types/node": "^24.0.0",
     "typescript": "^6.0.0"

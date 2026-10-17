@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `jira_get_activity_stream` tool for reading the global activity stream or a user's activity stream, optionally narrowed by project, issue and date range
 
+### Changed
+- Replaced `@modelcontextprotocol/sdk` with a built-in minimal MCP server over stdio (`src/mcp-server.ts`); the package now has no runtime dependencies
+
 ## [1.0.3] - 2026-01-27
 
 ### Added

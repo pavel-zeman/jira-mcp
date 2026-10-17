@@ -1,12 +1,6 @@
 #!/usr/bin/env node
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-  type Tool,
-} from '@modelcontextprotocol/sdk/types.js';
+import { serveStdio, type CallToolResult, type Tool } from './mcp-server.ts';
 import { JiraApiError, JiraClient, type CreateIssueInput, type UpdateIssueInput } from './jira-client.ts';
 
 // Environment variables
@@ -330,31 +324,9 @@ const tools: Tool[] = [
   },
 ];
 
-// Create server instance
-const server = new Server(
-  {
-    name: 'mcp-jira-server',
-    version: '1.0.0',
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  }
-);
-
-// Handle list tools request
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  return {
-    tools,
-  };
-});
-
 // Handle tool calls
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+async function callTool(name: string, args: Record<string, unknown>): Promise<CallToolResult> {
   try {
-    const { name, arguments: args = {} } = request.params;
-
     switch (name) {
       case 'jira_get_issue': {
         const issue = await getJiraClient().getIssue(args.issueKey as string);
@@ -559,13 +531,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       isError: true,
     };
   }
-});
+}
 
 // Start the server
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  
+function main() {
+  serveStdio({
+    name: 'mcp-jira-server',
+    version: '1.0.0',
+    tools,
+    callTool,
+  });
+
   const config = checkEnvironmentConfig();
   if (config.isConfigured) {
     console.error('Jira MCP Server running on stdio (configured)');
@@ -574,7 +550,4 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error('Fatal error:', error);
-  process.exit(1);
-});
+main();
