@@ -100,7 +100,7 @@ Once connected, you can search using JQL:
 
 - ✅ Get, create, update, delete issues
 - ✅ Search with JQL
-- ✅ Add comments
+- ✅ Add, edit, and delete comments
 - ✅ Assign issues
 - ✅ Transition statuses
 - ✅ List projects and issue types

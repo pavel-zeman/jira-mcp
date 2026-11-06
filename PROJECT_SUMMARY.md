@@ -14,7 +14,7 @@ A complete Model Context Protocol (MCP) server for integrating self-hosted Jira 
 ### Core Functionality
 - ✅ **Issue Management**: Create, read, update, delete issues
 - ✅ **Search**: Powerful JQL-based search capabilities
-- ✅ **Comments**: Add and retrieve issue comments
+- ✅ **Comments**: Add, retrieve, edit, and delete issue comments
 - ✅ **Assignments**: Assign and reassign issues
 - ✅ **Transitions**: Move issues through workflows
 - ✅ **Projects**: List and view project details
@@ -26,7 +26,7 @@ A complete Model Context Protocol (MCP) server for integrating self-hosted Jira 
 ```
 mcp-jira-server/
 ├── src/
-│   ├── index.ts              # Jira tool definitions and handlers (13 tools)
+│   ├── index.ts              # Jira tool definitions and handlers (15 tools)
 │   ├── mcp-server.ts         # Minimal MCP server (JSON-RPC 2.0 over stdio)
 │   ├── jira-client.ts        # Jira REST API client
 │   └── activity-stream.ts    # Activity stream (Atom feed) parser
@@ -59,13 +59,15 @@ mcp-jira-server/
 4. **jira_update_issue** - Update existing issues
 5. **jira_add_comment** - Add comments to issues
 6. **jira_get_comments** - Retrieve issue comments
-7. **jira_get_projects** - List all projects
-8. **jira_get_project** - Get project details
-9. **jira_get_issue_types** - List available issue types
-10. **jira_assign_issue** - Assign issues to users
-11. **jira_delete_issue** - Delete issues permanently
-12. **jira_get_current_user** - Get authenticated user info
-13. **jira_get_activity_stream** - Read the global or a user's activity stream
+7. **jira_update_comment** - Edit the text of a comment
+8. **jira_delete_comment** - Delete comments permanently
+9. **jira_get_projects** - List all projects
+10. **jira_get_project** - Get project details
+11. **jira_get_issue_types** - List available issue types
+12. **jira_assign_issue** - Assign issues to users
+13. **jira_delete_issue** - Delete issues permanently
+14. **jira_get_current_user** - Get authenticated user info
+15. **jira_get_activity_stream** - Read the global or a user's activity stream
 
 ## 📚 Documentation Provided
 

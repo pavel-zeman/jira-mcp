@@ -7,7 +7,7 @@ A Model Context Protocol (MCP) server for interacting with self-hosted Jira inst
 - ✅ Personal Access Token authentication for self-hosted Jira
 - ✅ Create, read, update, and delete Jira issues
 - ✅ Search issues using JQL (Jira Query Language)
-- ✅ Add and view comments
+- ✅ Add, view, edit, and delete comments
 - ✅ Manage issue assignments
 - ✅ List projects and issue types
 - ✅ Transition issues between statuses
@@ -240,7 +240,29 @@ Get all comments from a Jira issue.
 **Parameters:**
 - `issueKey` (string, required): Issue key
 
-### 7. `jira_get_projects`
+### 7. `jira_update_comment`
+Replace the text of an existing comment on a Jira issue.
+
+**Parameters:**
+- `issueKey` (string, required): Issue key
+- `commentId` (string, required): Comment ID (the `id` returned by `jira_get_comments`)
+- `comment` (string, required): New comment text
+
+**Example:**
+```
+In PROJ-123, change my last comment to "Fixed in release 2.4"
+```
+
+### 8. `jira_delete_comment`
+Delete a comment from a Jira issue.
+
+**Parameters:**
+- `issueKey` (string, required): Issue key
+- `commentId` (string, required): Comment ID (the `id` returned by `jira_get_comments`)
+
+**⚠️ Warning:** This action is permanent and cannot be undone.
+
+### 9. `jira_get_projects`
 List all available Jira projects.
 
 **Parameters:** None
@@ -250,26 +272,26 @@ List all available Jira projects.
 List all Jira projects
 ```
 
-### 8. `jira_get_project`
+### 10. `jira_get_project`
 Get details of a specific project.
 
 **Parameters:**
 - `projectKey` (string, required): Project key
 
-### 9. `jira_get_issue_types`
+### 11. `jira_get_issue_types`
 Get available issue types for a project.
 
 **Parameters:**
 - `projectKey` (string, required): Project key
 
-### 10. `jira_assign_issue`
+### 12. `jira_assign_issue`
 Assign a Jira issue to a user.
 
 **Parameters:**
 - `issueKey` (string, required): Issue key
 - `assignee` (string, required): Username to assign to
 
-### 11. `jira_delete_issue`
+### 13. `jira_delete_issue`
 Delete a Jira issue permanently.
 
 **Parameters:**
@@ -277,12 +299,12 @@ Delete a Jira issue permanently.
 
 **⚠️ Warning:** This action is permanent and cannot be undone.
 
-### 12. `jira_get_current_user`
+### 14. `jira_get_current_user`
 Get information about the currently authenticated user.
 
 **Parameters:** None
 
-### 13. `jira_get_activity_stream`
+### 15. `jira_get_activity_stream`
 Read the activity stream (issues created, fields updated, status transitions, comments), newest first. Without `username` it returns the global activity stream; with `username` it returns that user's activity stream. Each entry contains the time, author, a plain-text title, details (e.g. comment text or changed fields), a link and the issue key.
 
 **Parameters:**

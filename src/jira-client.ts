@@ -293,6 +293,16 @@ export class JiraClient {
     return result.comments;
   }
 
+  async updateComment(issueKey: string, commentId: string, comment: string): Promise<JiraComment> {
+    return await this.request<JiraComment>('PUT', `/issue/${issueKey}/comment/${commentId}`, {
+      body: comment
+    });
+  }
+
+  async deleteComment(issueKey: string, commentId: string): Promise<void> {
+    await this.request('DELETE', `/issue/${issueKey}/comment/${commentId}`);
+  }
+
   async getProjects(): Promise<JiraProject[]> {
     return await this.request<JiraProject[]>('GET', '/project');
   }

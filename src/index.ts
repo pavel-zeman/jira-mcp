@@ -213,6 +213,46 @@ const tools: Tool[] = [
     },
   },
   {
+    name: 'jira_update_comment',
+    description: 'Replace the text of an existing comment on a Jira issue',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        issueKey: {
+          type: 'string',
+          description: 'The Jira issue key',
+        },
+        commentId: {
+          type: 'string',
+          description: 'The comment ID (the "id" field returned by jira_get_comments)',
+        },
+        comment: {
+          type: 'string',
+          description: 'The new comment text, replacing the current text',
+        },
+      },
+      required: ['issueKey', 'commentId', 'comment'],
+    },
+  },
+  {
+    name: 'jira_delete_comment',
+    description: 'Delete a comment from a Jira issue permanently',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        issueKey: {
+          type: 'string',
+          description: 'The Jira issue key',
+        },
+        commentId: {
+          type: 'string',
+          description: 'The comment ID (the "id" field returned by jira_get_comments)',
+        },
+      },
+      required: ['issueKey', 'commentId'],
+    },
+  },
+  {
     name: 'jira_get_projects',
     description: 'List all available Jira projects',
     inputSchema: {
@@ -421,6 +461,34 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<Ca
             {
               type: 'text',
               text: JSON.stringify(comments, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'jira_update_comment': {
+        const comment = await getJiraClient().updateComment(
+          args.issueKey as string,
+          args.commentId as string,
+          args.comment as string
+        );
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `Successfully updated comment ${args.commentId} on ${args.issueKey}\n\n${JSON.stringify(comment, null, 2)}`,
+            },
+          ],
+        };
+      }
+
+      case 'jira_delete_comment': {
+        await getJiraClient().deleteComment(args.issueKey as string, args.commentId as string);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `Successfully deleted comment ${args.commentId} from ${args.issueKey}`,
             },
           ],
         };
