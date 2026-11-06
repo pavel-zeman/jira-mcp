@@ -5,10 +5,10 @@ All notable changes to the MCP Jira Server project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.0] - 2026-11-06
 
 ### Added
-- `jira_update_comment` tool for replacing the text of an existing issue comment
+- `jira_update_comment` tool for replacing the text of an existing issue comment; the comment's visibility restriction (group or project role) is kept
 - `jira_delete_comment` tool for deleting an issue comment
 
 ## [1.1.0] - 2026-10-17
@@ -101,6 +101,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Release History
 
+- **1.2.0** (2026-11-06) - Edit and delete comments
 - **1.1.0** (2026-10-17) - Activity streams & zero runtime dependencies
 - **1.0.3** (2026-01-27) - Custom fields & security updates
 - **1.0.2** (2025-10-08) - Initial public release

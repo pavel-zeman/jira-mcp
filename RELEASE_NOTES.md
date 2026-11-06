@@ -1,5 +1,42 @@
 # MCP Jira Server - Release Notes
 
+## 🚀 Version 1.2.0 - November 6, 2026
+
+### 🎯 Edit and Delete Comments
+
+This release completes comment management: besides adding and reading comments, the server can now edit and delete them.
+
+### ✨ What's New
+
+#### 💬 **Comment Editing and Deletion**
+- **New tool `jira_update_comment`**: Replace the text of an existing comment
+- **New tool `jira_delete_comment`**: Delete a comment permanently
+- Both tools identify the comment by the `id` returned by `jira_get_comments`
+- Editing keeps the comment's visibility restriction (group or project role), so an internal comment stays internal
+- Jira's permission scheme applies: your own comments need the "Edit Own Comments" / "Delete Own Comments" permissions, other people's comments need "Edit All Comments" / "Delete All Comments"
+
+### 📦 Package Information
+- **npm Package**: `mcp-jira-server`
+- **Version**: 1.2.0
+- **Runtime Dependencies**: none
+- **License**: MIT
+
+### 📋 **New Tools**
+
+| Tool | Description | Parameters |
+|------|-------------|-------------------|
+| `jira_update_comment` | Replace the text of a comment | `issueKey`, `commentId`, `comment` |
+| `jira_delete_comment` | Delete a comment permanently | `issueKey`, `commentId` |
+
+#### Example Prompts
+```
+In PROJ-123, change my last comment to "Fixed in release 2.4"
+Delete my duplicate comment on PROJ-123
+```
+
+
+---
+
 ## 🚀 Version 1.1.0 - October 17, 2026
 
 ### 🎯 Activity Streams & Zero Runtime Dependencies

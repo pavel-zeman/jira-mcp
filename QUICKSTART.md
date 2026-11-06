@@ -117,6 +117,7 @@ Try these in Claude:
 4. "Update issue ABC-456 to set status to In Progress and assign to me"
 5. "Search for all issues I reported in the last week"
 6. "What happened in project XYZ today?"
+7. "Change my last comment on ABC-123 to say 'Fixed in release 2.4'"
 
 ## 🔐 Security Reminder
 

@@ -1,8 +1,8 @@
-# 🚀 MCP Jira Server v1.1.0 - Release Summary
+# 🚀 MCP Jira Server v1.2.0 - Release Summary
 
-## 📰 Activity Streams & Zero Runtime Dependencies
+## 💬 Edit and Delete Comments
 
-**MCP Jira Server** brings Jira integration to AI assistants through the Model Context Protocol. Version 1.1.0 adds activity streams and drops every runtime dependency.
+**MCP Jira Server** brings Jira integration to AI assistants through the Model Context Protocol. Version 1.2.0 lets them edit and delete issue comments, not just add and read them.
 
 ### 📦 Available Now on npm
 ```bash
@@ -11,34 +11,24 @@ npx mcp-jira-server
 
 ### ✨ What's New
 
-**📰 Activity Streams**
-- New `jira_get_activity_stream` tool: issues created, fields updated, status transitions and comments, newest first
-- Global stream or a single user's stream
-- Filter by project, issue and date range
-
-**📦 No Runtime Dependencies**
-- Built-in MCP server replaces `@modelcontextprotocol/sdk`
-- Node's built-in `fetch` replaces `axios`
-
-**🩺 Clearer Errors**
-- Errors name the failing request and the real cause of network failures
-
-**🛠️ Developer Experience**
-- Run the TypeScript source directly on Node.js 22.18+ (`npm start`, `npm run dev`)
-- TypeScript 6 toolchain
+**💬 Comment Editing and Deletion**
+- New `jira_update_comment` tool: replace the text of an existing comment
+- New `jira_delete_comment` tool: delete a comment permanently
+- Comments are identified by the `id` returned by `jira_get_comments`
+- Editing keeps the comment's visibility restriction, so an internal comment stays internal
 
 ### ⚠️ Upgrade Note
-Node's `fetch` ignores `HTTP_PROXY`/`HTTPS_PROXY`. If Jira is only reachable through a proxy, set `NODE_USE_ENV_PROXY=1` (Node.js 24+) in the server's environment.
+None: existing tools and configuration are unchanged.
 
 ### 🛠️ Available Tools
 
 | Category | Tools |
 |----------|-------|
 | **Issue Management** | `get_issue`, `create_issue`, `update_issue`, `delete_issue`, `search_issues` |
-| **Comments** | `add_comment`, `get_comments` |
+| **Comments** | `add_comment`, `get_comments`, `update_comment` *(new)*, `delete_comment` *(new)* |
 | **Projects** | `get_projects`, `get_project`, `get_issue_types` |
 | **Users** | `assign_issue`, `get_current_user` |
-| **Activity** | `get_activity_stream` *(new)* |
+| **Activity** | `get_activity_stream` |
 
 ### 🚀 Quick Start
 
@@ -70,7 +60,7 @@ Node's `fetch` ignores `HTTP_PROXY`/`HTTPS_PROXY`. If Jira is only reachable thr
    ```
 
 ### 📊 Package Stats
-- **Size**: 20.4 kB compressed, 84.9 kB unpacked
+- **Size**: 21.0 kB compressed, 90.1 kB unpacked
 - **Node.js**: 18+ required
 - **License**: MIT
 - **Dependencies**: none
