@@ -1,5 +1,59 @@
 # MCP Jira Server - Release Notes
 
+## 🚀 Version 2.0.0 - November 6, 2026
+
+### 🎯 Separate Tool for Status Transitions
+
+Changing an issue's status now has its own tool, `jira_transition_issue`, instead of the `status` parameter of `jira_update_issue`. A status change no longer edits the issue first, so it works wherever the workflow allows the transition.
+
+### ✨ What's New
+
+#### 🔀 **Status Transitions**
+- **New tool `jira_transition_issue`**: Move an issue to another status by running a workflow transition
+- The target status name is case-insensitive, e.g. `"in progress"` matches `In Progress`
+- If the target status can't be reached from the current one in a single step, the error lists the statuses that can, e.g. `Available target statuses: Waiting, Ready for Development`
+- Only the "Transition Issues" permission is needed. Previously, a status change edited the issue first, so it also needed the "Edit Issues" permission and failed on issues in non-editable statuses such as Closed
+- Fields required on a transition screen (such as a resolution) are not supported yet
+
+### 💥 **Breaking Change**
+- **`jira_update_issue` no longer accepts `status`**. Use `jira_transition_issue` instead. AI assistants pick this up from the tool list automatically; only scripts that call the tool with a hard-coded `status` argument need changing
+
+### 📦 Package Information
+- **npm Package**: `mcp-jira-server`
+- **Version**: 2.0.0
+- **Runtime Dependencies**: none
+- **License**: MIT
+
+### 📋 **New Tool**
+
+| Tool | Description | Parameters |
+|------|-------------|-------------------|
+| `jira_transition_issue` | Change the status of an issue | `issueKey`, `status` |
+
+#### Example Prompts
+```
+Move PROJ-123 to "In Progress"
+Mark PROJ-123 as Done
+```
+
+### 🔄 **Migration from 1.2.0**
+
+No configuration changes. Update as usual:
+```bash
+npm update mcp-jira-server
+```
+
+Or for npx users, it will automatically use the latest version:
+```bash
+npx mcp-jira-server
+```
+
+Things to check:
+- **Direct callers of `jira_update_issue`**: If you pass `status`, it is now ignored. Call `jira_transition_issue` with the same `issueKey` and `status` instead.
+
+
+---
+
 ## 🚀 Version 1.2.0 - November 6, 2026
 
 ### 🎯 Edit and Delete Comments

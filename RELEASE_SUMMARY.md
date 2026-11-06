@@ -1,8 +1,8 @@
-# 🚀 MCP Jira Server v1.2.0 - Release Summary
+# 🚀 MCP Jira Server v2.0.0 - Release Summary
 
-## 💬 Edit and Delete Comments
+## 🔀 Separate Tool for Status Transitions
 
-**MCP Jira Server** brings Jira integration to AI assistants through the Model Context Protocol. Version 1.2.0 lets them edit and delete issue comments, not just add and read them.
+**MCP Jira Server** brings Jira integration to AI assistants through the Model Context Protocol. Version 2.0.0 moves status changes into a tool of their own, which works wherever the workflow allows the transition.
 
 ### 📦 Available Now on npm
 ```bash
@@ -11,21 +11,21 @@ npx mcp-jira-server
 
 ### ✨ What's New
 
-**💬 Comment Editing and Deletion**
-- New `jira_update_comment` tool: replace the text of an existing comment
-- New `jira_delete_comment` tool: delete a comment permanently
-- Comments are identified by the `id` returned by `jira_get_comments`
-- Editing keeps the comment's visibility restriction, so an internal comment stays internal
+**🔀 Status Transitions**
+- New `jira_transition_issue` tool: move an issue to another status
+- Status names are case-insensitive
+- If the target status can't be reached in one step, the error lists the statuses that can
+- No longer needs the "Edit Issues" permission, so issues in non-editable statuses such as Closed can be transitioned too
 
 ### ⚠️ Upgrade Note
-None: existing tools and configuration are unchanged.
+**Breaking:** `jira_update_issue` no longer accepts `status`; use `jira_transition_issue` instead. AI assistants adapt automatically from the tool list. Configuration is unchanged.
 
 ### 🛠️ Available Tools
 
 | Category | Tools |
 |----------|-------|
-| **Issue Management** | `get_issue`, `create_issue`, `update_issue`, `delete_issue`, `search_issues` |
-| **Comments** | `add_comment`, `get_comments`, `update_comment` *(new)*, `delete_comment` *(new)* |
+| **Issue Management** | `get_issue`, `create_issue`, `update_issue`, `transition_issue` *(new)*, `delete_issue`, `search_issues` |
+| **Comments** | `add_comment`, `get_comments`, `update_comment`, `delete_comment` |
 | **Projects** | `get_projects`, `get_project`, `get_issue_types` |
 | **Users** | `assign_issue`, `get_current_user` |
 | **Activity** | `get_activity_stream` |
@@ -60,8 +60,8 @@ None: existing tools and configuration are unchanged.
    ```
 
 ### 📊 Package Stats
-- **Size**: 21.0 kB compressed, 90.1 kB unpacked
-- **Node.js**: 18+ required
+- **Size**: 21.4 kB compressed, 92.3 kB unpacked
+- **Node.js**: 24+ required
 - **License**: MIT
 - **Dependencies**: none
 
