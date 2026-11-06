@@ -214,15 +214,30 @@ Update an existing Jira issue.
 - `assignee` (string, optional): New assignee username
 - `priority` (string, optional): New priority
 - `labels` (array, optional): New labels array
-- `status` (string, optional): New status (e.g., "In Progress", "Done")
 - Custom fields: Any additional parameters prefixed with `customfield_` (e.g., `customfield_10002`)
+
+To change the status, use `jira_transition_issue`.
 
 **Example:**
 ```
-Update issue PROJ-123 to set status to "In Progress" and assign to john.doe
+Update issue PROJ-123 to set priority to High and assign to john.doe
 ```
 
-### 5. `jira_add_comment`
+### 5. `jira_transition_issue`
+Change the status of a Jira issue by running a workflow transition.
+
+**Parameters:**
+- `issueKey` (string, required): Issue key
+- `status` (string, required): Target status (e.g., "In Progress", "Done"), case-insensitive
+
+The target status must be reachable from the current status in one step. If it is not, the error lists the statuses that are. Fields that the workflow requires on the transition screen (such as a resolution) are not supported.
+
+**Example:**
+```
+Move PROJ-123 to "In Progress"
+```
+
+### 6. `jira_add_comment`
 Add a comment to a Jira issue.
 
 **Parameters:**
@@ -234,13 +249,13 @@ Add a comment to a Jira issue.
 Add a comment to PROJ-123 saying "Fixed in latest deployment"
 ```
 
-### 6. `jira_get_comments`
+### 7. `jira_get_comments`
 Get all comments from a Jira issue.
 
 **Parameters:**
 - `issueKey` (string, required): Issue key
 
-### 7. `jira_update_comment`
+### 8. `jira_update_comment`
 Replace the text of an existing comment on a Jira issue.
 
 **Parameters:**
@@ -253,7 +268,7 @@ Replace the text of an existing comment on a Jira issue.
 In PROJ-123, change my last comment to "Fixed in release 2.4"
 ```
 
-### 8. `jira_delete_comment`
+### 9. `jira_delete_comment`
 Delete a comment from a Jira issue.
 
 **Parameters:**
@@ -262,7 +277,7 @@ Delete a comment from a Jira issue.
 
 **⚠️ Warning:** This action is permanent and cannot be undone.
 
-### 9. `jira_get_projects`
+### 10. `jira_get_projects`
 List all available Jira projects.
 
 **Parameters:** None
@@ -272,26 +287,26 @@ List all available Jira projects.
 List all Jira projects
 ```
 
-### 10. `jira_get_project`
+### 11. `jira_get_project`
 Get details of a specific project.
 
 **Parameters:**
 - `projectKey` (string, required): Project key
 
-### 11. `jira_get_issue_types`
+### 12. `jira_get_issue_types`
 Get available issue types for a project.
 
 **Parameters:**
 - `projectKey` (string, required): Project key
 
-### 12. `jira_assign_issue`
+### 13. `jira_assign_issue`
 Assign a Jira issue to a user.
 
 **Parameters:**
 - `issueKey` (string, required): Issue key
 - `assignee` (string, required): Username to assign to
 
-### 13. `jira_delete_issue`
+### 14. `jira_delete_issue`
 Delete a Jira issue permanently.
 
 **Parameters:**
@@ -299,12 +314,12 @@ Delete a Jira issue permanently.
 
 **⚠️ Warning:** This action is permanent and cannot be undone.
 
-### 14. `jira_get_current_user`
+### 15. `jira_get_current_user`
 Get information about the currently authenticated user.
 
 **Parameters:** None
 
-### 15. `jira_get_activity_stream`
+### 16. `jira_get_activity_stream`
 Read the activity stream (issues created, fields updated, status transitions, comments), newest first. Without `username` it returns the global activity stream; with `username` it returns that user's activity stream. Each entry contains the time, author, a plain-text title, details (e.g. comment text or changed fields), a link and the issue key.
 
 **Parameters:**

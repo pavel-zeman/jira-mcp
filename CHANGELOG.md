@@ -5,6 +5,14 @@ All notable changes to the MCP Jira Server project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `jira_transition_issue` tool for changing an issue's status; when the target status can't be reached from the current one, the error lists the statuses that can
+
+### Removed
+- The `status` parameter of `jira_update_issue`; use `jira_transition_issue` instead. A status change no longer requires permission to edit the issue, so issues in non-editable statuses (e.g. Closed) can now be transitioned
+
 ## [1.2.0] - 2026-11-06
 
 ### Added

@@ -26,7 +26,7 @@ A complete Model Context Protocol (MCP) server for integrating self-hosted Jira 
 ```
 mcp-jira-server/
 ├── src/
-│   ├── index.ts              # Jira tool definitions and handlers (15 tools)
+│   ├── index.ts              # Jira tool definitions and handlers (16 tools)
 │   ├── mcp-server.ts         # Minimal MCP server (JSON-RPC 2.0 over stdio)
 │   ├── jira-client.ts        # Jira REST API client
 │   └── activity-stream.ts    # Activity stream (Atom feed) parser
@@ -57,17 +57,18 @@ mcp-jira-server/
 2. **jira_search_issues** - Search with JQL
 3. **jira_create_issue** - Create new issues
 4. **jira_update_issue** - Update existing issues
-5. **jira_add_comment** - Add comments to issues
-6. **jira_get_comments** - Retrieve issue comments
-7. **jira_update_comment** - Edit the text of a comment
-8. **jira_delete_comment** - Delete comments permanently
-9. **jira_get_projects** - List all projects
-10. **jira_get_project** - Get project details
-11. **jira_get_issue_types** - List available issue types
-12. **jira_assign_issue** - Assign issues to users
-13. **jira_delete_issue** - Delete issues permanently
-14. **jira_get_current_user** - Get authenticated user info
-15. **jira_get_activity_stream** - Read the global or a user's activity stream
+5. **jira_transition_issue** - Change issue status
+6. **jira_add_comment** - Add comments to issues
+7. **jira_get_comments** - Retrieve issue comments
+8. **jira_update_comment** - Edit the text of a comment
+9. **jira_delete_comment** - Delete comments permanently
+10. **jira_get_projects** - List all projects
+11. **jira_get_project** - Get project details
+12. **jira_get_issue_types** - List available issue types
+13. **jira_assign_issue** - Assign issues to users
+14. **jira_delete_issue** - Delete issues permanently
+15. **jira_get_current_user** - Get authenticated user info
+16. **jira_get_activity_stream** - Read the global or a user's activity stream
 
 ## 📚 Documentation Provided
 

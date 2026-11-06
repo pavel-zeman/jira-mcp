@@ -63,7 +63,6 @@ export interface UpdateIssueInput {
   assignee?: string;
   priority?: string;
   labels?: string[];
-  status?: string;
   // Pass-through map for Jira custom fields to update
   customFields?: Record<string, any>;
 }
@@ -253,26 +252,22 @@ export class JiraClient {
 
     await this.request('PUT', `/issue/${issueKey}`, updateData);
 
-    // Handle status transition separately if provided
-    if (input.status) {
-      await this.transitionIssue(issueKey, input.status);
-    }
-
     return await this.getIssue(issueKey);
   }
 
-  async transitionIssue(issueKey: string, statusName: string): Promise<void> {
-    // Get available transitions
+  async transitionIssue(issueKey: string, statusName: string): Promise<JiraIssue> {
+    // Only transitions available from the issue's current status are returned
     const transitionsResponse = await this.request<{ transitions: any[] }>('GET', `/issue/${issueKey}/transitions`);
     const transitions = transitionsResponse.transitions;
 
     // Find the transition that matches the desired status
-    const transition = transitions.find((t: any) => 
+    const transition = transitions.find((t: any) =>
       t.to.name.toLowerCase() === statusName.toLowerCase()
     );
 
     if (!transition) {
-      throw new Error(`No transition found to status: ${statusName}`);
+      const available = transitions.map((t: any) => t.to.name).join(', ') || 'none';
+      throw new Error(`No transition found from the current status of ${issueKey} to status: ${statusName}. Available target statuses: ${available}`);
     }
 
     await this.request('POST', `/issue/${issueKey}/transitions`, {
@@ -280,6 +275,8 @@ export class JiraClient {
         id: transition.id
       }
     });
+
+    return await this.getIssue(issueKey);
   }
 
   async addComment(issueKey: string, comment: string): Promise<JiraComment> {

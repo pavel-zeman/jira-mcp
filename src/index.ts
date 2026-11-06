@@ -167,10 +167,6 @@ const tools: Tool[] = [
           },
           description: 'New array of labels',
         },
-        status: {
-          type: 'string',
-          description: 'New status/workflow state (e.g., "In Progress", "Done")',
-        },
         customFields: {
           type: 'object',
           description: 'Map of additional Jira field IDs/keys (e.g., customfield_10211) to include in the fields payload',
@@ -178,6 +174,24 @@ const tools: Tool[] = [
         },
       },
       required: ['issueKey'],
+    },
+  },
+  {
+    name: 'jira_transition_issue',
+    description: 'Change the status of a Jira issue by running a workflow transition. The target status must be reachable from the current status in one step; if it is not, the error lists the statuses that are',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        issueKey: {
+          type: 'string',
+          description: 'The Jira issue key',
+        },
+        status: {
+          type: 'string',
+          description: 'Target status name (e.g., "In Progress", "Done"), case-insensitive',
+        },
+      },
+      required: ['issueKey', 'status'],
     },
   },
   {
@@ -426,7 +440,6 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<Ca
           priority: args.priority as string,
           labels: args.labels as string[],
           customFields: args.customFields as Record<string, any>,
-          status: args.status as string,
         };
         const issue = await getJiraClient().updateIssue(args.issueKey as string, input);
         return {
@@ -434,6 +447,21 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<Ca
             {
               type: 'text',
               text: `Successfully updated issue ${issue.key}\n\n${JSON.stringify(issue, null, 2)}`,
+            },
+          ],
+        };
+      }
+
+      case 'jira_transition_issue': {
+        const issue = await getJiraClient().transitionIssue(
+          args.issueKey as string,
+          args.status as string
+        );
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `Successfully transitioned ${issue.key} to ${issue.fields.status.name}\n\n${JSON.stringify(issue, null, 2)}`,
             },
           ],
         };
