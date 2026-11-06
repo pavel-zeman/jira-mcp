@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { serveStdio, type CallToolResult, type Tool } from './mcp-server.ts';
-import { JiraApiError, JiraClient, type CreateIssueInput, type UpdateIssueInput } from './jira-client.ts';
+import { JiraApiError, JiraClient, type AddAttachmentInput, type CreateIssueInput, type JiraAttachment, type UpdateIssueInput } from './jira-client.ts';
 
 // Environment variables
 const JIRA_BASE_URL = process.env.JIRA_BASE_URL;
@@ -44,6 +44,41 @@ function getJiraClient(): JiraClient {
   }
   
   return jiraClient;
+}
+
+// Image formats that models can view; other attachments are returned only if they are UTF-8 text
+const INLINE_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+// Larger attachments have to be saved to a file: bigger images are rejected by model APIs, and longer text would crowd out the conversation
+const MAX_INLINE_IMAGE_SIZE = 5 * 1024 * 1024;
+const MAX_INLINE_TEXT_SIZE = 1024 * 1024;
+
+function attachmentContent(attachment: JiraAttachment, data: Buffer): CallToolResult['content'] {
+  const summary = `${attachment.filename} (${attachment.mimeType}, ${data.length} bytes)`;
+  const mimeType = attachment.mimeType.split(';')[0].trim();
+  const isImage = INLINE_IMAGE_TYPES.includes(mimeType);
+
+  if (data.length > (isImage ? MAX_INLINE_IMAGE_SIZE : MAX_INLINE_TEXT_SIZE)) {
+    throw new Error(`${summary} is too large to return directly; pass filePath to save it to a file`);
+  }
+
+  if (isImage) {
+    return [
+      { type: 'text', text: `Attachment ${summary}` },
+      { type: 'image', data: data.toString('base64'), mimeType },
+    ];
+  }
+
+  let text: string | undefined;
+  try {
+    text = new TextDecoder('utf-8', { fatal: true }).decode(data);
+  } catch {
+    // Not valid UTF-8
+  }
+  // Binary formats are rarely valid UTF-8, and those that are still contain NUL bytes
+  if (text === undefined || text.includes('\0')) {
+    throw new Error(`${summary} is not a text file; pass filePath to save it to a file`);
+  }
+  return [{ type: 'text', text: `Attachment ${summary}:\n\n${text}` }];
 }
 
 // Define tools
@@ -264,6 +299,70 @@ const tools: Tool[] = [
         },
       },
       required: ['issueKey', 'commentId'],
+    },
+  },
+  {
+    name: 'jira_add_attachment',
+    description: 'Upload a file as an attachment to a Jira issue. Pass either filePath to upload a local file, or content and fileName to upload content directly',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        issueKey: {
+          type: 'string',
+          description: 'The Jira issue key',
+        },
+        filePath: {
+          type: 'string',
+          description: 'Absolute path of a local file to upload (read by the MCP server, so it must be on the machine the server runs on)',
+        },
+        content: {
+          type: 'string',
+          description: 'File content to upload instead of a local file; requires fileName',
+        },
+        contentEncoding: {
+          type: 'string',
+          enum: ['utf8', 'base64'],
+          description: 'Encoding of content: "utf8" for text, "base64" for binary data (default: utf8)',
+          default: 'utf8',
+        },
+        fileName: {
+          type: 'string',
+          description: 'Attachment name shown in Jira (e.g., report.csv). Defaults to the file name of filePath',
+        },
+      },
+      required: ['issueKey'],
+    },
+  },
+  {
+    name: 'jira_download_attachment',
+    description: 'Download an attachment of a Jira issue. With filePath, the file is saved locally. Without it, the content is returned directly: text files as text, PNG, JPEG, GIF and WebP images as images; other binary files require filePath',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        attachmentId: {
+          type: 'string',
+          description: 'The attachment ID (the "id" returned by jira_add_attachment, or of an entry in fields.attachment returned by jira_get_issue)',
+        },
+        filePath: {
+          type: 'string',
+          description: 'Absolute path to save the file to, on the machine the MCP server runs on. If it is an existing directory, the file is saved there under its attachment name. An existing file is never overwritten',
+        },
+      },
+      required: ['attachmentId'],
+    },
+  },
+  {
+    name: 'jira_delete_attachment',
+    description: 'Delete an attachment from a Jira issue permanently',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        attachmentId: {
+          type: 'string',
+          description: 'The attachment ID (the "id" returned by jira_add_attachment, or of an entry in fields.attachment returned by jira_get_issue)',
+        },
+      },
+      required: ['attachmentId'],
     },
   },
   {
@@ -517,6 +616,55 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<Ca
             {
               type: 'text',
               text: `Successfully deleted comment ${args.commentId} from ${args.issueKey}`,
+            },
+          ],
+        };
+      }
+
+      case 'jira_add_attachment': {
+        const input: AddAttachmentInput = {
+          filePath: args.filePath as string,
+          content: args.content as string,
+          contentEncoding: args.contentEncoding as AddAttachmentInput['contentEncoding'],
+          fileName: args.fileName as string,
+        };
+        const attachment = await getJiraClient().addAttachment(args.issueKey as string, input);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `Successfully attached ${attachment.filename} to ${args.issueKey}\n\n${JSON.stringify(attachment, null, 2)}`,
+            },
+          ],
+        };
+      }
+
+      case 'jira_download_attachment': {
+        if (args.filePath) {
+          const { attachment, filePath } = await getJiraClient().saveAttachment(args.attachmentId as string, args.filePath as string);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Successfully downloaded ${attachment.filename} to ${filePath}\n\n${JSON.stringify(attachment, null, 2)}`,
+              },
+            ],
+          };
+        }
+
+        const { attachment, data } = await getJiraClient().downloadAttachment(args.attachmentId as string);
+        return {
+          content: attachmentContent(attachment, data),
+        };
+      }
+
+      case 'jira_delete_attachment': {
+        await getJiraClient().deleteAttachment(args.attachmentId as string);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `Successfully deleted attachment ${args.attachmentId}`,
             },
           ],
         };

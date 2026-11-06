@@ -15,7 +15,8 @@ export interface Tool {
 }
 
 export interface CallToolResult {
-  content: { type: 'text'; text: string }[];
+  // Image data is base64-encoded
+  content: ({ type: 'text'; text: string } | { type: 'image'; data: string; mimeType: string })[];
   // Tool failures are reported in the result (not as JSON-RPC errors) so the model can see them
   isError?: boolean;
 }

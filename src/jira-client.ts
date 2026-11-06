@@ -1,3 +1,5 @@
+import { readFile, stat, writeFile } from 'node:fs/promises';
+import { basename, join } from 'node:path';
 import { parseActivityFeed, type ActivityEntry } from './activity-stream.ts';
 
 export interface JiraConfig {
@@ -78,6 +80,30 @@ export interface JiraComment {
   updated: string;
 }
 
+export interface JiraAttachment {
+  id: string;
+  filename: string;
+  mimeType: string;
+  size: number;
+  // Download URL
+  content: string;
+  author: {
+    displayName: string;
+    emailAddress: string;
+  };
+  created: string;
+}
+
+export interface AddAttachmentInput {
+  // Exactly one of filePath and content is required
+  filePath?: string;
+  content?: string;
+  // Encoding of content: utf8 for text, base64 for binary data
+  contentEncoding?: 'utf8' | 'base64';
+  // Defaults to the base name of filePath; required with content
+  fileName?: string;
+}
+
 export interface ActivityStreamFilter {
   // Jira username (not display name); omit for the global activity stream
   username?: string;
@@ -93,6 +119,8 @@ interface RequestOptions {
   // Defaults to the REST API; plugin servlets such as /activity live directly under the base URL
   root?: string;
   accept?: string;
+  // Return the response body as a Buffer instead of parsing it
+  binary?: boolean;
 }
 
 function toEpochMillis(date: string): number {
@@ -136,17 +164,32 @@ export class JiraClient {
     }
   }
 
-  private async request<T = any>(method: string, path: string, body?: unknown, { root = this.apiUrl, accept }: RequestOptions = {}): Promise<T> {
+  private async request<T = any>(method: string, path: string, body?: unknown, { root = this.apiUrl, accept, binary }: RequestOptions = {}): Promise<T> {
+    const headers = { ...this.headers };
+    if (accept) {
+      headers['Accept'] = accept;
+    }
+    if (body instanceof FormData) {
+      // fetch() sets the multipart Content-Type itself, including the boundary
+      delete headers['Content-Type'];
+      // Jira's XSRF protection rejects multipart requests without this header
+      headers['X-Atlassian-Token'] = 'no-check';
+    }
+
     let response: Response;
     try {
       response = await fetch(`${root}${path}`, {
         method,
-        headers: accept ? { ...this.headers, 'Accept': accept } : this.headers,
-        body: body === undefined ? undefined : JSON.stringify(body)
+        headers,
+        body: body === undefined || body instanceof FormData ? body : JSON.stringify(body)
       });
     } catch (error: any) {
       // fetch() reports every network failure as "fetch failed"; the real reason (DNS, TLS, ECONNREFUSED) is in `cause`
       throw new Error(`${method} ${path} failed: ${error.cause?.message ?? error.message}`, { cause: error });
+    }
+
+    if (binary && response.ok) {
+      return Buffer.from(await response.arrayBuffer()) as T;
     }
 
     // Updates and deletes return 204 No Content, and error pages are not always JSON
@@ -298,6 +341,51 @@ export class JiraClient {
 
   async deleteComment(issueKey: string, commentId: string): Promise<void> {
     await this.request('DELETE', `/issue/${issueKey}/comment/${commentId}`);
+  }
+
+  async addAttachment(issueKey: string, input: AddAttachmentInput): Promise<JiraAttachment> {
+    const { filePath, content, contentEncoding = 'utf8', fileName = filePath && basename(filePath) } = input;
+    if (!filePath === !content) {
+      throw new Error('Provide exactly one of filePath and content');
+    }
+    if (!fileName) {
+      throw new Error('fileName is required when uploading content');
+    }
+
+    const data = filePath ? await readFile(filePath) : Buffer.from(content!, contentEncoding);
+    const form = new FormData();
+    // Jira picks the MIME type from the file name, so the part's generic application/octet-stream does no harm
+    form.append('file', new Blob([data]), fileName);
+
+    // Jira accepts several files per request and always returns an array
+    const attachments = await this.request<JiraAttachment[]>('POST', `/issue/${issueKey}/attachments`, form);
+    return attachments[0];
+  }
+
+  async downloadAttachment(attachmentId: string): Promise<{ attachment: JiraAttachment; data: Buffer }> {
+    const attachment = await this.request<JiraAttachment>('GET', `/attachment/${attachmentId}`);
+    // The content URL starts with Jira's own base URL setting, which can differ from JIRA_BASE_URL (e.g. behind a reverse proxy),
+    // so only its /secure/attachment/... part is kept and requested from JIRA_BASE_URL like everything else
+    const { pathname } = new URL(attachment.content);
+    const start = pathname.indexOf('/secure/attachment/');
+    if (start < 0) {
+      throw new Error(`Unexpected content URL of attachment ${attachmentId}: ${attachment.content}`);
+    }
+    const data = await this.request<Buffer>('GET', pathname.slice(start), undefined, { root: this.baseUrl, accept: '*/*', binary: true });
+    return { attachment, data };
+  }
+
+  // Saves into filePath under the attachment's name when filePath is a directory; never overwrites an existing file
+  async saveAttachment(attachmentId: string, filePath: string): Promise<{ attachment: JiraAttachment; filePath: string }> {
+    const { attachment, data } = await this.downloadAttachment(attachmentId);
+    const isDirectory = (await stat(filePath).catch(() => undefined))?.isDirectory();
+    const target = isDirectory ? join(filePath, basename(attachment.filename)) : filePath;
+    await writeFile(target, data, { flag: 'wx' });
+    return { attachment, filePath: target };
+  }
+
+  async deleteAttachment(attachmentId: string): Promise<void> {
+    await this.request('DELETE', `/attachment/${attachmentId}`);
   }
 
   async getProjects(): Promise<JiraProject[]> {

@@ -101,6 +101,7 @@ Once connected, you can search using JQL:
 - ✅ Get, create, update, delete issues
 - ✅ Search with JQL
 - ✅ Add, edit, and delete comments
+- ✅ Upload, download, and delete attachments
 - ✅ Assign issues
 - ✅ Transition statuses
 - ✅ List projects and issue types
@@ -118,6 +119,7 @@ Try these in Claude:
 5. "Search for all issues I reported in the last week"
 6. "What happened in project XYZ today?"
 7. "Change my last comment on ABC-123 to say 'Fixed in release 2.4'"
+8. "Attach C:\logs\error.log to ABC-123"
 
 ## 🔐 Security Reminder
 

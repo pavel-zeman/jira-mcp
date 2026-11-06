@@ -5,6 +5,13 @@ All notable changes to the MCP Jira Server project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `jira_add_attachment` tool for uploading a file to an issue, either a local file (`filePath`) or content passed directly (`content`, as text or base64)
+- `jira_download_attachment` tool for downloading an issue attachment, either saved to a local file (`filePath`) or returned directly: text files as text, and PNG, JPEG, GIF and WebP images as images the model can view
+- `jira_delete_attachment` tool for deleting an issue attachment
+
 ## [2.0.0] - 2026-11-06
 
 ### Added

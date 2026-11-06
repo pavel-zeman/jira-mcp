@@ -8,6 +8,7 @@ A Model Context Protocol (MCP) server for interacting with self-hosted Jira inst
 - ✅ Create, read, update, and delete Jira issues
 - ✅ Search issues using JQL (Jira Query Language)
 - ✅ Add, view, edit, and delete comments
+- ✅ Upload, download, and delete issue attachments
 - ✅ Manage issue assignments
 - ✅ List projects and issue types
 - ✅ Transition issues between statuses
@@ -277,7 +278,49 @@ Delete a comment from a Jira issue.
 
 **⚠️ Warning:** This action is permanent and cannot be undone.
 
-### 10. `jira_get_projects`
+### 10. `jira_add_attachment`
+Upload a file as an attachment to a Jira issue, either a local file or content passed directly.
+
+**Parameters:**
+- `issueKey` (string, required): Issue key
+- `filePath` (string, optional): Absolute path of a local file to upload. The file is read by the MCP server, so it must be on the machine where the server runs
+- `content` (string, optional): File content to upload instead of a local file
+- `contentEncoding` (string, optional): Encoding of `content`: `utf8` for text (default) or `base64` for binary data
+- `fileName` (string, optional): Attachment name shown in Jira (e.g., "report.csv"). Defaults to the name of the file at `filePath`; required with `content`
+
+Pass exactly one of `filePath` and `content`. Jira's maximum attachment size (10 MB by default) applies.
+
+**Examples:**
+```
+Attach C:\logs\error.log to PROJ-123
+Attach the test results above to PROJ-123 as results.csv
+```
+
+### 11. `jira_download_attachment`
+Download an attachment of a Jira issue, either to a local file or directly into the conversation.
+
+**Parameters:**
+- `attachmentId` (string, required): Attachment ID (the `id` returned by `jira_add_attachment`, or of an entry in `fields.attachment` returned by `jira_get_issue`)
+- `filePath` (string, optional): Absolute path to save the file to, on the machine where the MCP server runs. If it is an existing directory, the file is saved there under its attachment name. An existing file is never overwritten
+
+Without `filePath`, the content is returned directly: UTF-8 text files up to 1 MB as text, and PNG, JPEG, GIF and WebP images up to 5 MB as images the model can view. Other binary files and larger files require `filePath`.
+
+**Examples:**
+```
+Show me the log attached to PROJ-123
+What does the screenshot in PROJ-123 show?
+Download all attachments of PROJ-123 to C:\Downloads
+```
+
+### 12. `jira_delete_attachment`
+Delete an attachment from a Jira issue.
+
+**Parameters:**
+- `attachmentId` (string, required): Attachment ID (the `id` returned by `jira_add_attachment`, or of an entry in `fields.attachment` returned by `jira_get_issue`)
+
+**⚠️ Warning:** This action is permanent and cannot be undone.
+
+### 13. `jira_get_projects`
 List all available Jira projects.
 
 **Parameters:** None
@@ -287,26 +330,26 @@ List all available Jira projects.
 List all Jira projects
 ```
 
-### 11. `jira_get_project`
+### 14. `jira_get_project`
 Get details of a specific project.
 
 **Parameters:**
 - `projectKey` (string, required): Project key
 
-### 12. `jira_get_issue_types`
+### 15. `jira_get_issue_types`
 Get available issue types for a project.
 
 **Parameters:**
 - `projectKey` (string, required): Project key
 
-### 13. `jira_assign_issue`
+### 16. `jira_assign_issue`
 Assign a Jira issue to a user.
 
 **Parameters:**
 - `issueKey` (string, required): Issue key
 - `assignee` (string, required): Username to assign to
 
-### 14. `jira_delete_issue`
+### 17. `jira_delete_issue`
 Delete a Jira issue permanently.
 
 **Parameters:**
@@ -314,12 +357,12 @@ Delete a Jira issue permanently.
 
 **⚠️ Warning:** This action is permanent and cannot be undone.
 
-### 15. `jira_get_current_user`
+### 18. `jira_get_current_user`
 Get information about the currently authenticated user.
 
 **Parameters:** None
 
-### 16. `jira_get_activity_stream`
+### 19. `jira_get_activity_stream`
 Read the activity stream (issues created, fields updated, status transitions, comments), newest first. Without `username` it returns the global activity stream; with `username` it returns that user's activity stream. Each entry contains the time, author, a plain-text title, details (e.g. comment text or changed fields), a link and the issue key.
 
 **Parameters:**

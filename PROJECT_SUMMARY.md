@@ -26,7 +26,7 @@ A complete Model Context Protocol (MCP) server for integrating self-hosted Jira 
 ```
 mcp-jira-server/
 ├── src/
-│   ├── index.ts              # Jira tool definitions and handlers (16 tools)
+│   ├── index.ts              # Jira tool definitions and handlers (19 tools)
 │   ├── mcp-server.ts         # Minimal MCP server (JSON-RPC 2.0 over stdio)
 │   ├── jira-client.ts        # Jira REST API client
 │   └── activity-stream.ts    # Activity stream (Atom feed) parser
@@ -62,13 +62,16 @@ mcp-jira-server/
 7. **jira_get_comments** - Retrieve issue comments
 8. **jira_update_comment** - Edit the text of a comment
 9. **jira_delete_comment** - Delete comments permanently
-10. **jira_get_projects** - List all projects
-11. **jira_get_project** - Get project details
-12. **jira_get_issue_types** - List available issue types
-13. **jira_assign_issue** - Assign issues to users
-14. **jira_delete_issue** - Delete issues permanently
-15. **jira_get_current_user** - Get authenticated user info
-16. **jira_get_activity_stream** - Read the global or a user's activity stream
+10. **jira_add_attachment** - Upload files to issues
+11. **jira_download_attachment** - Download attachments to a file or read them directly
+12. **jira_delete_attachment** - Delete attachments permanently
+13. **jira_get_projects** - List all projects
+14. **jira_get_project** - Get project details
+15. **jira_get_issue_types** - List available issue types
+16. **jira_assign_issue** - Assign issues to users
+17. **jira_delete_issue** - Delete issues permanently
+18. **jira_get_current_user** - Get authenticated user info
+19. **jira_get_activity_stream** - Read the global or a user's activity stream
 
 ## 📚 Documentation Provided
 
