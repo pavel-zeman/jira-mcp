@@ -1,8 +1,8 @@
-# 🚀 MCP Jira Server v2.0.0 - Release Summary
+# 🚀 MCP Jira Server v2.1.0 - Release Summary
 
-## 🔀 Separate Tool for Status Transitions
+## 📎 Attachment Management
 
-**MCP Jira Server** brings Jira integration to AI assistants through the Model Context Protocol. Version 2.0.0 moves status changes into a tool of their own, which works wherever the workflow allows the transition.
+**MCP Jira Server** brings Jira integration to AI assistants through the Model Context Protocol. Version 2.1.0 lets them upload, read, download, and delete issue attachments.
 
 ### 📦 Available Now on npm
 ```bash
@@ -11,21 +11,22 @@ npx mcp-jira-server
 
 ### ✨ What's New
 
-**🔀 Status Transitions**
-- New `jira_transition_issue` tool: move an issue to another status
-- Status names are case-insensitive
-- If the target status can't be reached in one step, the error lists the statuses that can
-- No longer needs the "Edit Issues" permission, so issues in non-editable statuses such as Closed can be transitioned too
+**📎 Attachments**
+- New `jira_add_attachment` tool: upload a local file, or content the assistant passes directly as text or base64
+- New `jira_download_attachment` tool: save an attachment to a local file, or read it directly: text files as text, PNG/JPEG/GIF/WebP images as images the assistant can view
+- New `jira_delete_attachment` tool: delete an attachment permanently
+- Downloads never overwrite an existing file and always go through `JIRA_BASE_URL`
 
 ### ⚠️ Upgrade Note
-**Breaking:** `jira_update_issue` no longer accepts `status`; use `jira_transition_issue` instead. AI assistants adapt automatically from the tool list. Configuration is unchanged.
+None: existing tools and configuration are unchanged.
 
 ### 🛠️ Available Tools
 
 | Category | Tools |
 |----------|-------|
-| **Issue Management** | `get_issue`, `create_issue`, `update_issue`, `transition_issue` *(new)*, `delete_issue`, `search_issues` |
+| **Issue Management** | `get_issue`, `create_issue`, `update_issue`, `transition_issue`, `delete_issue`, `search_issues` |
 | **Comments** | `add_comment`, `get_comments`, `update_comment`, `delete_comment` |
+| **Attachments** | `add_attachment` *(new)*, `download_attachment` *(new)*, `delete_attachment` *(new)* |
 | **Projects** | `get_projects`, `get_project`, `get_issue_types` |
 | **Users** | `assign_issue`, `get_current_user` |
 | **Activity** | `get_activity_stream` |
@@ -60,7 +61,7 @@ npx mcp-jira-server
    ```
 
 ### 📊 Package Stats
-- **Size**: 21.4 kB compressed, 92.3 kB unpacked
+- **Size**: 25.5 kB compressed, 111.4 kB unpacked
 - **Node.js**: 24+ required
 - **License**: MIT
 - **Dependencies**: none

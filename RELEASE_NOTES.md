@@ -1,5 +1,65 @@
 # MCP Jira Server - Release Notes
 
+## 🚀 Version 2.1.0 - November 7, 2026
+
+### 🎯 Attachment Management
+
+AI assistants can now work with issue attachments: upload files to an issue, read or download existing attachments, and delete them.
+
+### ✨ What's New
+
+#### 📎 **Attachments**
+- **New tool `jira_add_attachment`**: Upload a file to an issue, either a local file (`filePath`) or content the assistant passes directly (`content`, as text or base64 for binary data). The attachment is named after the file unless `fileName` says otherwise
+- **New tool `jira_download_attachment`**: Download an attachment, either saved to a local file (`filePath`) or returned straight into the conversation:
+  - UTF-8 text files up to 1 MB come back as text, so the assistant can read logs, CSVs, or configs attached to an issue
+  - PNG, JPEG, GIF and WebP images up to 5 MB come back as images, so the assistant can look at screenshots
+  - Other binary files (zip, PDF, Office documents) and larger files need `filePath`
+  - An existing file is never overwritten. If `filePath` is a directory, the file is saved there under its attachment name
+- **New tool `jira_delete_attachment`**: Delete an attachment permanently
+- Attachments are identified by the `id` returned by `jira_add_attachment`, or listed in `fields.attachment` of `jira_get_issue`
+- `filePath` refers to the machine the MCP server runs on
+- Jira's limits and permissions apply: the maximum attachment size (10 MB by default), the "Create Attachments" permission for uploads, and "Delete Own Attachments" / "Delete All Attachments" for deletion
+- Downloads are always requested from `JIRA_BASE_URL`, even if Jira's own base URL setting differs (e.g. behind a reverse proxy), so the token is never sent anywhere else and `JIRA_USER_AGENT` applies
+
+### 📦 Package Information
+- **npm Package**: `mcp-jira-server`
+- **Version**: 2.1.0
+- **Runtime Dependencies**: none
+- **License**: MIT
+
+### 📋 **New Tools**
+
+| Tool | Description | Parameters |
+|------|-------------|-------------------|
+| `jira_add_attachment` | Upload a file to an issue | `issueKey`, `filePath` or `content` (+ `contentEncoding`), `fileName` |
+| `jira_download_attachment` | Download an attachment to a file or read it directly | `attachmentId`, `filePath` |
+| `jira_delete_attachment` | Delete an attachment permanently | `attachmentId` |
+
+#### Example Prompts
+```
+Attach C:\logs\error.log to PROJ-123
+Attach the test results above to PROJ-123 as results.csv
+Show me the log attached to PROJ-123
+What does the screenshot in PROJ-123 show?
+Download all attachments of PROJ-123 to C:\Downloads
+Delete the outdated screenshot from PROJ-123
+```
+
+### 🔄 **Migration from 2.0.0**
+
+No changes to existing tools or configuration. Update as usual:
+```bash
+npm update mcp-jira-server
+```
+
+Or for npx users, it will automatically use the latest version:
+```bash
+npx mcp-jira-server
+```
+
+
+---
+
 ## 🚀 Version 2.0.0 - November 6, 2026
 
 ### 🎯 Separate Tool for Status Transitions

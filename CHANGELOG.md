@@ -5,7 +5,7 @@ All notable changes to the MCP Jira Server project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.0] - 2026-11-07
 
 ### Added
 - `jira_add_attachment` tool for uploading a file to an issue, either a local file (`filePath`) or content passed directly (`content`, as text or base64)
@@ -108,7 +108,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for Jira Cloud instances
 - Webhook integration
 - Batch operations
-- Attachment management
 - Advanced reporting features
 - QMetry test management integration
 
@@ -116,6 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Release History
 
+- **2.1.0** (2026-11-07) - Upload, download, and delete attachments
 - **2.0.0** (2026-11-06) - Separate tool for issue status transitions
 - **1.2.0** (2026-11-06) - Edit and delete comments
 - **1.1.0** (2026-10-17) - Activity streams & zero runtime dependencies

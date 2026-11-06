@@ -781,7 +781,7 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<Ca
 function main() {
   serveStdio({
     name: 'mcp-jira-server',
-    version: '2.0.0',
+    version: '2.1.0',
     tools,
     callTool,
   });
